@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -17,10 +18,11 @@ namespace Prototype
         static Image R2 = Prototype.Properties.Resources.walkR2;
         static Image bush1 = Prototype.Properties.Resources.bush1;
         static Image fence = Prototype.Properties.Resources.fence;
+        static Image coinFront = Prototype.Properties.Resources.coin;
 
         Image bob = F1;
-        static int y = 20;
-        static int x = 20;
+        static int y = 100;
+        static int x = 100;
         Rectangle bushBounds = new Rectangle(500, 300, 60, 40);
 
         struct obstacle
@@ -32,9 +34,30 @@ namespace Prototype
             public int height;
             public Rectangle bounds;
         }
+
+        obstacle[] obstacles = new obstacle[3];
+        List<obstacle> coinList = new List<obstacle>();
+        int coins;
         public Form1()
         {
             InitializeComponent();
+        }
+
+        private void LoadObstaclesAndCoins()
+        {
+            obstacles[0] = new obstacle { imageName = fence, xLoc = 500, yLoc = 450, width = 48, height = 22, bounds = new Rectangle(500, 450, 48, 22) };
+            obstacles[1] = new obstacle { imageName = fence, xLoc = 350, yLoc = 400, width = 48, height = 22, bounds = new Rectangle(350, 400, 48, 22) };
+            obstacles[2] = new obstacle { imageName = fence, xLoc = 580, yLoc = 300, width = 48, height = 22, bounds = new Rectangle(580, 300, 48, 22) };
+
+            
+
+            coins = 0;
+            int coinx = 400;
+            for (int i = 0; i < 10; i++)
+            {
+                coinList.Add(new obstacle { imageName = coinFront, xLoc = coinx, yLoc = 400, width = 20, height = 20, bounds = new Rectangle(coinx, 400, 20, 20) });
+                coinx += 40;
+            }
         }
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
@@ -49,13 +72,17 @@ namespace Prototype
                 {
                     bob = L1;
                 }
-                if (!checkCollision())
+                if (checkCollision())
                 {
-                    x = x - 10;
+                    x = x + 7;
                 }
-                else
+                else if (checkCoins())
                 {
-                    x = x + 10;
+                    x = x - 7;
+                    if (x < 0)
+                    {
+                        x = pictureBox1.Width;
+                    }
                 }
             } // left
 
@@ -72,13 +99,18 @@ namespace Prototype
                 {
                     bob = R1;
                 }
-                if (!checkCollision())
+                if (checkCollision())
                 {
-                    x = x + 10;
+                    x = x - 7;
                 }
-                else
+                else if (checkCoins())
                 {
-                    x = x - 10;
+                    x = x + 7;
+
+                    if (x < 0)
+                    {
+                        x = pictureBox1.Width;
+                    }
                 }
             } // right
 
@@ -95,13 +127,17 @@ namespace Prototype
                 {
                     bob = B1;
                 }
-                if (!checkCollision())
+                if (checkCollision())
                 {
-                    y = y - 10;
+                    y = y + 7;
                 }
-                else
+                else if (checkCoins())
                 {
-                    y = y + 10;
+                    y = y - 7;
+                    if (x < 0)
+                    {
+                        x = pictureBox1.Width;
+                    }
                 }
             } // up
 
@@ -118,35 +154,129 @@ namespace Prototype
                 {
                     bob = F1;
                 }
-                if (!checkCollision())
+                if (checkCollision())
                 {
-                    y = y + 10;
+                    y = y - 7;
                 }
-                else
+                else if (checkCoins())
                 {
-                    y = y - 10;
+                    y = y + 7;
+                    if (x < 0)
+                    {
+                        x = pictureBox1.Width;
+                    }
                 }
             } // down
+
+            pictureBox1.Refresh();
+            pictureBox1.Update();
 
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             e.Graphics.DrawImage(bush1, 500, 300, 60, 40);
-            e.Graphics.DrawRectangle(Pens.Red, bushBounds); 
+            e.Graphics.DrawRectangle(Pens.Red, bushBounds);
 
+            for (int i = 0; i < 3; i++)
+            {
+                e.Graphics.DrawImage(obstacles[i].imageName, obstacles[i].xLoc, obstacles[i].yLoc, obstacles[i].width, obstacles[i].height);
+            }
+           
             e.Graphics.DrawImage(bob, x, y, 30, 40);
+            
+            if (coinList.Count > 0)
+            {
+                for (int i = 0; i < coinList.Count; i++)
+                {
+                    e.Graphics.DrawImage(coinList[i].imageName, coinList[i].xLoc, coinList[i].yLoc, coinList[i].width, coinList[i].height);
+                }
+            }
+
+ 
         }
 
         private Boolean checkCollision()
         {
             Boolean collision = false;
             Rectangle manBound = new Rectangle(x, y, 30, 40);
-            if (manBound.IntersectsWith(bushBounds))
+            for (int i = 0; i < 3; i++)
             {
-                collision = true;
+                if (manBound.IntersectsWith(obstacles[i].bounds) || manBound.IntersectsWith(bushBounds))
+                {
+                    collision = true;
+                }
             }
             return collision;
+        }
+
+        private Boolean checkCoins()
+        {
+            RectangleF manBound = new RectangleF(x, y, 30, 40);
+            if (coinList.Count > 0)
+            {
+                for (int i = 0; i < coinList.Count; i++)
+                {
+                    if (manBound.IntersectsWith(coinList[i].bounds))
+                    {
+                        coinList.RemoveAt(i);
+                        coins++;
+                        label2.Text = coins.ToString();
+                    }
+                }
+            }
+            return true;
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+
+            obstacles[0] = new obstacle
+            {
+                imageName = fence,
+                xLoc = 500,
+                yLoc = 450,
+                width = 48,
+                height = 22,
+                bounds = new Rectangle(500, 450, 48, 22)
+            };
+
+            obstacles[1] = new obstacle
+            {
+                imageName = fence,
+                xLoc = 350,
+                yLoc = 400,
+                width = 48,
+                height = 22,
+                bounds = new Rectangle(350, 400, 48, 22)
+            };
+
+            obstacles[2] = new obstacle
+            {
+                imageName = fence,
+                xLoc = 580,
+                yLoc = 300,
+                width = 48,
+                height = 22,
+                bounds = new Rectangle(580, 300, 48, 22)
+            };
+
+            coins = 0;
+            int coinx = 400;
+            for (int i = 0; i < 10; i++)
+            {
+                coinList.Add(new obstacle()
+                {
+                    imageName = coinFront,
+                    xLoc = coinx,
+                    yLoc = 400,
+                    width = 20,
+                    height = 20,
+                    bounds = new Rectangle(coinx, 400, 20, 20)
+                });
+                coinx = coinx + 40;
+            }
         }
     }
 }

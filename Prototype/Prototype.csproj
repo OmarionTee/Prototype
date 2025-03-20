@@ -81,6 +81,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\background.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\coin.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\bush1.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fence.png" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="Resources\walkR1.png" />
   </ItemGroup>
   <ItemGroup>
@@ -96,25 +108,13 @@
     <None Include="Resources\walkB1.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\background.jpg" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\walkF1.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Resources\walkB2.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\walkR2.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\coin.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\bush1.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\fence.png" />
+    <None Include="Resources\walkF1.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
